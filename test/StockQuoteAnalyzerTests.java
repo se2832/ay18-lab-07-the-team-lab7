@@ -149,7 +149,7 @@ public class StockQuoteAnalyzerTests {
 	}
 
     @Test
-	public void testShouldGetChangeSinceLastCheckOneUpdate() throws Exception
+	public void testShouldGetChangeSinceLastCheckNoChange() throws Exception
 	{
 		// Arrange - Setup the expected calls.
 		when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(new StockQuote("F", 100.00, 100.00, 0.00));
@@ -157,8 +157,8 @@ public class StockQuoteAnalyzerTests {
 
         // Act
 		analyzer.refresh();
-		//TODO FIGURE OUT WHAT SHOULD DO HERE
-		analyzer.refresh();
+		analyzer.refresh(); //Refreshes again to test no change in between
+
 
 		// Assert
 		Assert.assertEquals(0.0, analyzer.getChangeSinceLastCheck());
