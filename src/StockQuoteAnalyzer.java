@@ -132,7 +132,7 @@ public class StockQuoteAnalyzer {
 	public void playAppropriateAudio() {
 		if (audioPlayer != null) {
 			try {
-				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()!=1.00)) {
+				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()!=1.00)){ //TODO fix issue OL: 135
 					audioPlayer.playHappyMusic();
 				}
 				if ((this.getPercentChangeSinceOpen() < 0) && (this.getChangeSinceLastCheck()<1.00)) {
@@ -216,7 +216,7 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 
-		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) % 100.0;
+		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) % 1000.00 /100.00; //fixed issue #7 OL: 219
 	}
 
 	/**
