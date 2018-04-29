@@ -157,6 +157,8 @@ public class StockQuoteAnalyzerTests {
 
         // Act
 		analyzer.refresh();
+		//TODO FIGURE OUT WHAT SHOULD DO HERE
+		analyzer.refresh();
 
 		// Assert
 		Assert.assertEquals(0.0, analyzer.getChangeSinceLastCheck());
@@ -277,6 +279,48 @@ public class StockQuoteAnalyzerTests {
 		// Assert
         Assert.assertEquals(analyzer.getPreviousOpen(), firstReturn.getOpen(), 0.01);
 	}
+
+    @Test(expectedExceptions = InvalidAnalysisState.class)
+    public void testShouldThrowInvalidAnalysisStateAfterNotUpdatingTwice() throws Exception
+    {
+        // Arrange - Setup the expected calls.
+        when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(new StockQuote("F", 100.00, 100.00, 0.00));
+        analyzer = new StockQuoteAnalyzer("F", mockedStockQuoteGenerator, mockedStockTickerAudio);
+        analyzer.refresh();
+
+        // Act
+        analyzer.getChangeSinceLastCheck();
+
+        // Assert
+    }
+
+    @Test(dataProvider = "normalOperationDataProvider")
+    public void testGetSymbolShouldReturnSymbol(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
+                                                                      double percentChange) throws Exception {
+        // Arrange
+        when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(firstReturn);
+        analyzer = new StockQuoteAnalyzer("F", mockedStockQuoteGenerator, mockedStockTickerAudio);
+
+        // Act
+        analyzer.refresh();
+
+        // Assert
+        Assert.assertEquals("F", analyzer.getSymbol());
+    }
+
+    @Test(dataProvider = "normalOperationDataProvider")
+    public void testGetCurrentQuoteShouldReturnCurrentQuote(StockQuote firstReturn, StockQuote secondReturn, int happyMusicCount, int sadMusicCount,
+                                                double percentChange) throws Exception {
+        // Arrange
+        when(mockedStockQuoteGenerator.getCurrentQuote()).thenReturn(firstReturn);
+        analyzer = new StockQuoteAnalyzer("F", mockedStockQuoteGenerator, mockedStockTickerAudio);
+
+        // Act
+        analyzer.refresh();
+
+        // Assert
+        Assert.assertEquals(analyzer.getCurrentQuote(), mockedStockQuoteGenerator.getCurrentQuote());
+    }
 
 	
 
