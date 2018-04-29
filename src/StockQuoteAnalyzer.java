@@ -135,7 +135,7 @@ public class StockQuoteAnalyzer {
 				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck() > 1.00)){ //fixed issue 8 OL:135
 					audioPlayer.playHappyMusic();
 				}
-				if ((this.getPercentChangeSinceOpen() < 0) && (this.getChangeSinceLastCheck()<1.00)) {
+				if ((this.getPercentChangeSinceOpen() < -1) || (this.getChangeSinceLastCheck()<-1.00)) { //fixed issue 9 OL: 138
 					audioPlayer.playSadMusic();
 				}
 			} catch (InvalidAnalysisState e) {
