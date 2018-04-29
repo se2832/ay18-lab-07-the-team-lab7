@@ -88,13 +88,13 @@ public class StockQuoteAnalyzer {
 		super();
 
 		// Check the validity of the symbol.
-		if (StockTickerListing.getSingleton().isValidTickerSymbol(symbol) != true) {
+		if (StockTickerListing.getSingleton().isValidTickerSymbol(symbol)) { //Fixed issue #1 OL:91
 			this.symbol = symbol;
 		} else {
-			throw new StockTickerConnectionError("Symbol " + symbol + "not found.");
+			throw new InvalidStockSymbolException("Symbol " + symbol + "not found."); //Fixed issue #2 by changing exception, OL: 94
 		}
 		if (stockQuoteSource == null) {
-			throw new InvalidStockSymbolException("The source for stock quotes can not be null");
+			throw new NullPointerException("The source for stock quotes can not be null"); //Fixed issue #3 by changing exception, OL: 97
 		}
 		this.stockQuoteSource = stockQuoteSource;
 		this.audioPlayer = audioPlayer;
@@ -113,7 +113,7 @@ public class StockQuoteAnalyzer {
 			StockQuoteInterface temp = this.stockQuoteSource.getCurrentQuote();
 
 			this.previousQuote = currentQuote;
-			this.currentQuote = this.previousQuote;
+			this.currentQuote = temp; // issue #5 OL:116
 		} catch (Exception e) {
 			throw new StockTickerConnectionError("Unable to connect with Stock Ticker Source.");
 		}
@@ -132,10 +132,10 @@ public class StockQuoteAnalyzer {
 	public void playAppropriateAudio() {
 		if (audioPlayer != null) {
 			try {
-				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck()!=1.00)) {
+				if ((this.getPercentChangeSinceOpen() > 1) || (this.getChangeSinceLastCheck() > 1.00)){ //fixed issue 8 OL:135
 					audioPlayer.playHappyMusic();
 				}
-				if ((this.getPercentChangeSinceOpen() < 0) && (this.getChangeSinceLastCheck()<1.00)) {
+				if ((this.getPercentChangeSinceOpen() < -1) || (this.getChangeSinceLastCheck()<-1.00)) { //fixed issue 9 OL: 138
 					audioPlayer.playSadMusic();
 				}
 			} catch (InvalidAnalysisState e) {
@@ -163,7 +163,7 @@ public class StockQuoteAnalyzer {
 	 *             has not yet been retrieved.
 	 */
 	public double getPreviousOpen() throws InvalidAnalysisState {
-		if (currentQuote != null) {
+		if (currentQuote == null) { //fixed issue #4 OL: 166
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 		return currentQuote.getOpen();
@@ -216,7 +216,7 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("No quote has ever been retrieved.");
 		}
 
-		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) % 100.0;
+		return Math.round((10000 * this.currentQuote.getChange() / this.currentQuote.getOpen())) / 100.00; //fixed issue #7 OL: 219
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class StockQuoteAnalyzer {
 			throw new InvalidAnalysisState("A second update has not yet occurred.");
 		}
 
-		return currentQuote.getLastTrade() - previousQuote.getChange();
+		return currentQuote.getLastTrade() - previousQuote.getLastTrade(); //fixed issue six OL: 242
 	}
 
 	/**
